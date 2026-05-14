@@ -17,7 +17,7 @@ class BookController extends Controller
     {
         $books = Book::query()
             ->latest()
-            ->paginate(10);
+            ->paginate();
 
         return BookResource::collection($books);
     }

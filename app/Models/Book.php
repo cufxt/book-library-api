@@ -9,6 +9,10 @@ class Book extends Model
 {
     use HasFactory;
 
+    public const DEFAULT_PER_PAGE = 10;
+
+    protected $perPage = self::DEFAULT_PER_PAGE;
+
     protected $fillable = [
         'title',
         'publisher',
