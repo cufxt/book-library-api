@@ -1,0 +1,579 @@
+{
+    "openapi": "3.0.0",
+    "info": {
+        "title": "Book Library API",
+        "description": "REST API application for a book library that allows users to track what books they have.",
+        "version": "1.0.0"
+    },
+    "servers": [
+        {
+            "url": "http://localhost:8000",
+            "description": "Local development server"
+        }
+    ],
+    "paths": {
+        "/api/books": {
+            "get": {
+                "tags": [
+                    "Books"
+                ],
+                "summary": "Get paginated books list",
+                "description": "Returns a paginated list of books ordered by creation date from newest to oldest.",
+                "operationId": "9017a3fa89d6636329067c858b27a6fa",
+                "parameters": [
+                    {
+                        "name": "page",
+                        "in": "query",
+                        "description": "Page number",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "example": 1,
+                            "minimum": 1
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Paginated books list",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/BookResourceCollection"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "post": {
+                "tags": [
+                    "Books"
+                ],
+                "summary": "Create a book",
+                "description": "Creates a new book record.",
+                "operationId": "72f82e1cd6f08112323f87053277ca99",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/BookStoreRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Book created",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/BookResource"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ValidationError"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/books/{book}": {
+            "get": {
+                "tags": [
+                    "Books"
+                ],
+                "summary": "Get a single book",
+                "description": "Returns details for a single book by ID.",
+                "operationId": "c977385c32095dec31075ca1f77c3cd7",
+                "parameters": [
+                    {
+                        "name": "book",
+                        "in": "path",
+                        "description": "Book ID",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "example": 1,
+                            "minimum": 1
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Book details",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/BookResource"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Book not found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/NotFoundError"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "tags": [
+                    "Books"
+                ],
+                "summary": "Delete a book",
+                "description": "Deletes a book by ID.",
+                "operationId": "5bf2d40ecbd2142dabcca0ec2b075369",
+                "parameters": [
+                    {
+                        "name": "book",
+                        "in": "path",
+                        "description": "Book ID",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "example": 1,
+                            "minimum": 1
+                        }
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "Book deleted"
+                    },
+                    "404": {
+                        "description": "Book not found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/NotFoundError"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "patch": {
+                "tags": [
+                    "Books"
+                ],
+                "summary": "Partially update a book",
+                "description": "Updates only the provided fields of an existing book.",
+                "operationId": "c1283d49608aef49d8389c1f31b8bdf4",
+                "parameters": [
+                    {
+                        "name": "book",
+                        "in": "path",
+                        "description": "Book ID",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "example": 1,
+                            "minimum": 1
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/BookUpdateRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Book updated",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/BookResource"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Book not found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/NotFoundError"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ValidationError"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "components": {
+        "schemas": {
+            "Book": {
+                "required": [
+                    "id",
+                    "title",
+                    "publisher",
+                    "author",
+                    "genre",
+                    "published_at",
+                    "words_count",
+                    "price_usd",
+                    "created_at",
+                    "updated_at"
+                ],
+                "properties": {
+                    "id": {
+                        "description": "Book identifier",
+                        "type": "integer",
+                        "example": 1
+                    },
+                    "title": {
+                        "description": "Book title",
+                        "type": "string",
+                        "example": "Dune",
+                        "maxLength": 255
+                    },
+                    "publisher": {
+                        "description": "Book publisher",
+                        "type": "string",
+                        "example": "Chilton Books",
+                        "maxLength": 255
+                    },
+                    "author": {
+                        "description": "Book author",
+                        "type": "string",
+                        "example": "Frank Herbert",
+                        "maxLength": 255
+                    },
+                    "genre": {
+                        "description": "Book genre",
+                        "type": "string",
+                        "example": "Science Fiction",
+                        "maxLength": 255
+                    },
+                    "published_at": {
+                        "description": "Book publication date",
+                        "type": "string",
+                        "format": "date",
+                        "example": "1965-08-01"
+                    },
+                    "words_count": {
+                        "description": "Amount of words in the book",
+                        "type": "integer",
+                        "example": 187240,
+                        "minimum": 1
+                    },
+                    "price_usd": {
+                        "description": "Book price in US dollars",
+                        "type": "string",
+                        "example": "15.99"
+                    },
+                    "created_at": {
+                        "description": "Date and time when the book record was created",
+                        "type": "string",
+                        "format": "date-time",
+                        "example": "2026-05-13T12:00:00.000000Z"
+                    },
+                    "updated_at": {
+                        "description": "Date and time when the book record was last updated",
+                        "type": "string",
+                        "format": "date-time",
+                        "example": "2026-05-13T12:30:00.000000Z"
+                    }
+                },
+                "type": "object"
+            },
+            "BookResource": {
+                "required": [
+                    "data"
+                ],
+                "properties": {
+                    "data": {
+                        "$ref": "#/components/schemas/Book"
+                    }
+                },
+                "type": "object"
+            },
+            "PaginationLink": {
+                "properties": {
+                    "url": {
+                        "type": "string",
+                        "example": "http://localhost:8000/api/books?page=1",
+                        "nullable": true
+                    },
+                    "label": {
+                        "type": "string",
+                        "example": "1"
+                    },
+                    "active": {
+                        "type": "boolean",
+                        "example": true
+                    }
+                },
+                "type": "object"
+            },
+            "BookResourceCollection": {
+                "required": [
+                    "data",
+                    "links",
+                    "meta"
+                ],
+                "properties": {
+                    "data": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/Book"
+                        }
+                    },
+                    "links": {
+                        "properties": {
+                            "first": {
+                                "type": "string",
+                                "example": "http://localhost:8000/api/books?page=1",
+                                "nullable": true
+                            },
+                            "last": {
+                                "type": "string",
+                                "example": "http://localhost:8000/api/books?page=2",
+                                "nullable": true
+                            },
+                            "prev": {
+                                "type": "string",
+                                "example": null,
+                                "nullable": true
+                            },
+                            "next": {
+                                "type": "string",
+                                "example": "http://localhost:8000/api/books?page=2",
+                                "nullable": true
+                            }
+                        },
+                        "type": "object"
+                    },
+                    "meta": {
+                        "properties": {
+                            "current_page": {
+                                "type": "integer",
+                                "example": 1
+                            },
+                            "from": {
+                                "type": "integer",
+                                "example": 1,
+                                "nullable": true
+                            },
+                            "last_page": {
+                                "type": "integer",
+                                "example": 2
+                            },
+                            "links": {
+                                "type": "array",
+                                "items": {
+                                    "$ref": "#/components/schemas/PaginationLink"
+                                }
+                            },
+                            "path": {
+                                "type": "string",
+                                "example": "http://localhost:8000/api/books"
+                            },
+                            "per_page": {
+                                "type": "integer",
+                                "example": 10
+                            },
+                            "to": {
+                                "type": "integer",
+                                "example": 10,
+                                "nullable": true
+                            },
+                            "total": {
+                                "type": "integer",
+                                "example": 15
+                            }
+                        },
+                        "type": "object"
+                    }
+                },
+                "type": "object"
+            },
+            "BookStoreRequest": {
+                "required": [
+                    "title",
+                    "publisher",
+                    "author",
+                    "genre",
+                    "published_at",
+                    "words_count",
+                    "price_usd"
+                ],
+                "properties": {
+                    "title": {
+                        "description": "Book title",
+                        "type": "string",
+                        "example": "Dune",
+                        "maxLength": 255
+                    },
+                    "publisher": {
+                        "description": "Book publisher",
+                        "type": "string",
+                        "example": "Chilton Books",
+                        "maxLength": 255
+                    },
+                    "author": {
+                        "description": "Book author",
+                        "type": "string",
+                        "example": "Frank Herbert",
+                        "maxLength": 255
+                    },
+                    "genre": {
+                        "description": "Book genre",
+                        "type": "string",
+                        "example": "Science Fiction",
+                        "maxLength": 255
+                    },
+                    "published_at": {
+                        "description": "Book publication date. Must not be in the future.",
+                        "type": "string",
+                        "format": "date",
+                        "example": "1965-08-01"
+                    },
+                    "words_count": {
+                        "description": "Amount of words in the book",
+                        "type": "integer",
+                        "example": 187240,
+                        "minimum": 1
+                    },
+                    "price_usd": {
+                        "description": "Book price in US dollars",
+                        "type": "number",
+                        "format": "float",
+                        "example": 15.99,
+                        "minimum": 0
+                    }
+                },
+                "type": "object"
+            },
+            "BookUpdateRequest": {
+                "description": "All fields are optional. Send only fields that should be updated.",
+                "properties": {
+                    "title": {
+                        "description": "Book title",
+                        "type": "string",
+                        "example": "Dune Messiah",
+                        "maxLength": 255
+                    },
+                    "publisher": {
+                        "description": "Book publisher",
+                        "type": "string",
+                        "example": "Chilton Books",
+                        "maxLength": 255
+                    },
+                    "author": {
+                        "description": "Book author",
+                        "type": "string",
+                        "example": "Frank Herbert",
+                        "maxLength": 255
+                    },
+                    "genre": {
+                        "description": "Book genre",
+                        "type": "string",
+                        "example": "Science Fiction",
+                        "maxLength": 255
+                    },
+                    "published_at": {
+                        "description": "Book publication date. Must not be in the future.",
+                        "type": "string",
+                        "format": "date",
+                        "example": "1969-10-15"
+                    },
+                    "words_count": {
+                        "description": "Amount of words in the book",
+                        "type": "integer",
+                        "example": 90000,
+                        "minimum": 1
+                    },
+                    "price_usd": {
+                        "description": "Book price in US dollars",
+                        "type": "number",
+                        "format": "float",
+                        "example": 12.99,
+                        "minimum": 0
+                    }
+                },
+                "type": "object"
+            },
+            "ValidationError": {
+                "required": [
+                    "message",
+                    "errors"
+                ],
+                "properties": {
+                    "message": {
+                        "type": "string",
+                        "example": "The title field is required."
+                    },
+                    "errors": {
+                        "type": "object",
+                        "example": {
+                            "title": [
+                                "The title field is required."
+                            ],
+                            "publisher": [
+                                "The publisher field is required."
+                            ]
+                        },
+                        "additionalProperties": {
+                            "type": "array",
+                            "items": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                },
+                "type": "object"
+            },
+            "NotFoundError": {
+                "required": [
+                    "message"
+                ],
+                "properties": {
+                    "message": {
+                        "type": "string",
+                        "example": "No query results for model [App\\Models\\Book] 999999"
+                    }
+                },
+                "type": "object"
+            }
+        }
+    },
+    "tags": [
+        {
+            "name": "Books",
+            "description": "Book library endpoints"
+        }
+    ]
+}
